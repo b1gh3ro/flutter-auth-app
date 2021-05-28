@@ -16,6 +16,16 @@ class LoginAuthState extends State<LoginAuth> {
   @override
   Widget build(BuildContext context) {
     final auth = FirebaseAuth.instance;
+    // ignore: unused_local_variable
+    User? user = FirebaseAuth.instance.currentUser;
+    auth.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+      } else {
+        print('User is signed in!');
+      }
+    });
+
     return MaterialApp(
       home: Scaffold(
         bottomNavigationBar: AuthBar(),
@@ -73,7 +83,12 @@ class LoginAuthState extends State<LoginAuth> {
                       ),
                     ),
                   ),
-                )
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      auth.signOut();
+                    },
+                    child: Text("signout")),
               ],
             ),
           ),
