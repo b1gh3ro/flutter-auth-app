@@ -1,7 +1,7 @@
 import 'package:firebase/components/main/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase/components/auth/authBar.dart';
 
 class LoginAuth extends StatefulWidget {
@@ -12,10 +12,11 @@ class LoginAuth extends StatefulWidget {
 class LoginAuthState extends State<LoginAuth> {
   var _password;
   var _email;
-  var _errorr;
+  var _error;
   @override
   Widget build(BuildContext context) {
     final auth = FirebaseAuth.instance;
+    // ignore: unused_local_variable
     User? user = FirebaseAuth.instance.currentUser;
 
     auth.authStateChanges().listen((User? user) {
@@ -31,11 +32,35 @@ class LoginAuthState extends State<LoginAuth> {
     return MaterialApp(
       home: Scaffold(
         bottomNavigationBar: AuthBar(),
-        body: Container(
+        body: SizedBox(
           child: Form(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Container(
+                    child: _error != null
+                        ? Container(
+                            width: double.infinity,
+                            color: Colors.amber,
+                            child: Row(children: [
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.error_outline,
+                                  )),
+                              Spacer(),
+                              Center(child: Text(_error)),
+                              Spacer(),
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _error = null;
+                                    });
+                                  },
+                                  icon: Icon(Icons.close)),
+                            ]),
+                          )
+                        : Text("")),
                 Text(
                   "Signup",
                   style: TextStyle(fontSize: 55),
@@ -69,26 +94,15 @@ class LoginAuthState extends State<LoginAuth> {
                   child: ElevatedButton(
                     onPressed: () async {
                       try {
-                        UserCredential userCredential = await FirebaseAuth
-                            .instance
+                        await FirebaseAuth.instance
                             .createUserWithEmailAndPassword(
                                 email: _email, password: _password);
                       } on FirebaseAuthException catch (e) {
-                        if (e.code == 'weak-password') {
-                          setState(() {
-                            _errorr = 'The password provided is too weak.';
-                          });
-                        } else if (e.code == 'email-already-in-use') {
-                          setState(() {
-                            _errorr = e.code;
-                          });
-                        } else if (e.code == 'email-already-in-use') {
-                          setState(() {
-                            _errorr = e.code;
-                          });
-                        }
-                      } catch (e) {
-                        print(e);
+                        print(_error);
+
+                        setState(() {
+                          _error = e.message;
+                        });
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -104,7 +118,6 @@ class LoginAuthState extends State<LoginAuth> {
                     ),
                   ),
                 ),
-                Text(_errorr),
               ],
             ),
           ),
