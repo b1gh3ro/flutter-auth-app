@@ -1,8 +1,8 @@
+import 'package:firebase/components/main/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'authBar.dart';
+import 'package:firebase/components/auth/authBar.dart';
 
 class LoginAuth extends StatefulWidget {
   @override
@@ -12,17 +12,19 @@ class LoginAuth extends StatefulWidget {
 class LoginAuthState extends State<LoginAuth> {
   var _password;
   var _email;
-
+  var _errorr;
   @override
   Widget build(BuildContext context) {
     final auth = FirebaseAuth.instance;
-    // ignore: unused_local_variable
     User? user = FirebaseAuth.instance.currentUser;
+
     auth.authStateChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');
       } else {
         print('User is signed in!');
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => HomePage()));
       }
     });
 
@@ -66,10 +68,28 @@ class LoginAuthState extends State<LoginAuth> {
                   margin: EdgeInsets.only(top: 10),
                   child: ElevatedButton(
                     onPressed: () async {
-                      await auth.createUserWithEmailAndPassword(
-                        email: _email,
-                        password: _password,
-                      );
+                      try {
+                        UserCredential userCredential = await FirebaseAuth
+                            .instance
+                            .createUserWithEmailAndPassword(
+                                email: _email, password: _password);
+                      } on FirebaseAuthException catch (e) {
+                        if (e.code == 'weak-password') {
+                          setState(() {
+                            _errorr = 'The password provided is too weak.';
+                          });
+                        } else if (e.code == 'email-already-in-use') {
+                          setState(() {
+                            _errorr = e.code;
+                          });
+                        } else if (e.code == 'email-already-in-use') {
+                          setState(() {
+                            _errorr = e.code;
+                          });
+                        }
+                      } catch (e) {
+                        print(e);
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.only(
@@ -84,11 +104,7 @@ class LoginAuthState extends State<LoginAuth> {
                     ),
                   ),
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      auth.signOut();
-                    },
-                    child: Text("signout")),
+                Text(_errorr),
               ],
             ),
           ),
