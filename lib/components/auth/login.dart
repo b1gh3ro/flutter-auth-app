@@ -19,7 +19,6 @@ class LoginAuthState extends State<LoginAuth> {
 
     auth.authStateChanges().listen((User? user) {
       if (user == null) {
-        print('User is currently signed out!');
       } else if (user.emailVerified == false) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => VerifyScreen()));

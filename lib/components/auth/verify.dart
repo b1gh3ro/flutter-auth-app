@@ -10,16 +10,18 @@ class VerifyScreen extends StatefulWidget {
 }
 
 class _VerifyScreenState extends State<VerifyScreen> {
-  final User? user = FirebaseAuth.instance.currentUser;
+  User? user = FirebaseAuth.instance.currentUser;
+  var timer;
 
   Future<void> checkEmailVerified() async {
     if (user!.emailVerified == true) {
       print("true");
+      timer.cancel();
       Navigator.of(context)
           .pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
     } else {
-      await user!.reload();
-      print(user!.emailVerified);
+      user = FirebaseAuth.instance.currentUser;
+      user!.reload();
     }
   }
 
@@ -27,7 +29,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
   Widget build(BuildContext context) {
     user!.sendEmailVerification();
     const oneSec = const Duration(seconds: 5);
-    new Timer.periodic(oneSec, (Timer t) => checkEmailVerified());
+    timer = new Timer.periodic(oneSec, (Timer t) => checkEmailVerified());
     return Scaffold(
       body: Center(
         child: Column(
