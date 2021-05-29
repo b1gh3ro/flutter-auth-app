@@ -2,20 +2,26 @@ import 'package:firebase/components/auth/verify.dart';
 import 'package:firebase/components/main/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'package:firebase/components/auth/authBar.dart';
 
-class LoginAuth extends StatefulWidget {
+class SignupAuth extends StatefulWidget {
   @override
-  LoginAuthState createState() => LoginAuthState();
+  SignupAuthState createState() => SignupAuthState();
 }
 
-class LoginAuthState extends State<LoginAuth> {
+class SignupAuthState extends State<SignupAuth> {
   var _password;
   var _email;
   var _error;
+  var _username;
+
+  User? user = FirebaseAuth.instance.currentUser;
+
   @override
   Widget build(BuildContext context) {
     final auth = FirebaseAuth.instance;
+    // ignore: unused_local_variable
 
     auth.authStateChanges().listen((User? user) {
       if (user == null) {
@@ -23,16 +29,6 @@ class LoginAuthState extends State<LoginAuth> {
       } else if (user.emailVerified == false) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => VerifyScreen()));
-      } else {
-        print('User is signed in!');
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomePage()));
-      }
-    });
-
-    auth.authStateChanges().listen((User? user) {
-      if (user == null) {
-        print('User is currently signed out!');
       } else {
         print('User is signed in!');
         Navigator.of(context).pushReplacement(
@@ -51,6 +47,7 @@ class LoginAuthState extends State<LoginAuth> {
                 Container(
                     child: _error != null
                         ? Container(
+                            width: double.infinity,
                             color: Colors.amber,
                             child: Row(children: [
                               IconButton(
@@ -59,11 +56,7 @@ class LoginAuthState extends State<LoginAuth> {
                                     Icons.error_outline,
                                   )),
                               Spacer(),
-                              Center(
-                                  child: Text(
-                                _error,
-                                style: TextStyle(fontSize: 8),
-                              )),
+                              Center(child: Text(_error)),
                               Spacer(),
                               IconButton(
                                   onPressed: () {
@@ -76,8 +69,19 @@ class LoginAuthState extends State<LoginAuth> {
                           )
                         : Text("")),
                 Text(
-                  "Signin",
+                  "Signup",
                   style: TextStyle(fontSize: 55),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextField(
+                    decoration: InputDecoration(hintText: "ENTER USERNAME"),
+                    onChanged: (value) {
+                      setState(() {
+                        _username = value;
+                      });
+                    },
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -107,20 +111,25 @@ class LoginAuthState extends State<LoginAuth> {
                   margin: EdgeInsets.only(top: 10),
                   child: ElevatedButton(
                     onPressed: () async {
-                      try {
-                        await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                                email: _email, password: _password)
-                            .then((_) {
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) => VerifyScreen()));
-                        });
-                      } on FirebaseAuthException catch (e) {
-                        print(e.message);
-                        setState(() {
-                          _error = e.message;
-                        });
+                      if (_username != "") {
+                        try {
+                          await FirebaseAuth.instance
+                              .createUserWithEmailAndPassword(
+                                  email: _email, password: _password)
+                              .then((result) {
+                            return result.user!
+                                .updateProfile(displayName: _username);
+                          }).then((value) {
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => VerifyScreen()));
+                          });
+                        } on FirebaseAuthException catch (e) {
+                          print(e.message);
+                          setState(() {
+                            _error = e.message;
+                          });
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -129,7 +138,7 @@ class LoginAuthState extends State<LoginAuth> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100))),
                     child: Text(
-                      "Signin",
+                      "SignUp",
                       style: TextStyle(
                         fontSize: 35,
                       ),

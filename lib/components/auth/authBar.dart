@@ -1,3 +1,5 @@
+import 'package:firebase/components/auth/login.dart';
+import 'package:firebase/components/auth/signup.dart';
 import 'package:flutter/material.dart';
 
 class AuthBar extends StatelessWidget {
@@ -8,7 +10,10 @@ class AuthBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
-            onPressed: null,
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginAuth()));
+            },
             child: Text(
               "SignIn",
               style: TextStyle(
@@ -17,7 +22,10 @@ class AuthBar extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: null,
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => SignupAuth()));
+            },
             child: Text(
               "SignUp",
               style: TextStyle(fontSize: 55),
