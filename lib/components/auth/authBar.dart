@@ -9,26 +9,44 @@ class AuthBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => LoginAuth()));
-            },
-            child: Text(
-              "SignIn",
-              style: TextStyle(
-                fontSize: 55,
+          Container(
+            height: MediaQuery.of(context).size.height / 13,
+            child: Expanded(
+              flex: 5,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => LoginAuth()));
+                },
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Text(
+                    "SignIn",
+                    style: TextStyle(
+                      fontSize: 55,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => SignupAuth()));
-            },
-            child: Text(
-              "SignUp",
-              style: TextStyle(fontSize: 55),
+          Container(
+            height: MediaQuery.of(context).size.height / 13,
+            child: Expanded(
+              flex: 5,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => SignupAuth()));
+                },
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Text(
+                    "SignUp",
+                    style: TextStyle(fontSize: 55),
+                  ),
+                ),
+              ),
             ),
           ),
         ],

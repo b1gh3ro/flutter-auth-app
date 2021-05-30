@@ -50,27 +50,37 @@ class LoginAuthState extends State<LoginAuth> {
                 Container(
                     child: _error != null
                         ? Container(
+                            width: MediaQuery.of(context).size.width,
                             color: Colors.amber,
                             child: Row(children: [
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.error_outline,
-                                  )),
+                              Expanded(
+                                flex: 1,
+                                child: IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.error_outline,
+                                    )),
+                              ),
                               Spacer(),
-                              Center(
-                                  child: Text(
-                                _error,
-                                style: TextStyle(fontSize: 8),
-                              )),
+                              Expanded(
+                                flex: 6,
+                                child: Center(
+                                    child: Text(
+                                  _error,
+                                  style: TextStyle(fontSize: 12),
+                                )),
+                              ),
                               Spacer(),
-                              IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _error = null;
-                                    });
-                                  },
-                                  icon: Icon(Icons.close)),
+                              Expanded(
+                                flex: 1,
+                                child: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _error = null;
+                                      });
+                                    },
+                                    icon: Icon(Icons.close)),
+                              ),
                             ]),
                           )
                         : Text("")),
@@ -107,14 +117,8 @@ class LoginAuthState extends State<LoginAuth> {
                   child: ElevatedButton(
                     onPressed: () async {
                       try {
-                        await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                                email: _email, password: _password)
-                            .then((_) {
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) => VerifyScreen()));
-                        });
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                            email: _email, password: _password);
                       } on FirebaseAuthException catch (e) {
                         print(e.message);
                         setState(() {

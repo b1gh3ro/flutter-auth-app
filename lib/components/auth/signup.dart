@@ -47,24 +47,31 @@ class SignupAuthState extends State<SignupAuth> {
                 Container(
                     child: _error != null
                         ? Container(
-                            width: double.infinity,
+                            width: MediaQuery.of(context).size.width,
                             color: Colors.amber,
                             child: Row(children: [
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.error_outline,
-                                  )),
+                              Expanded(
+                                flex: 1,
+                                child: IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.error_outline,
+                                    )),
+                              ),
                               Spacer(),
-                              Center(child: Text(_error)),
+                              Expanded(
+                                  flex: 6, child: Center(child: Text(_error))),
                               Spacer(),
-                              IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _error = null;
-                                    });
-                                  },
-                                  icon: Icon(Icons.close)),
+                              Expanded(
+                                flex: 1,
+                                child: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _error = null;
+                                      });
+                                    },
+                                    icon: Icon(Icons.close)),
+                              ),
                             ]),
                           )
                         : Text("")),
